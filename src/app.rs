@@ -214,13 +214,16 @@ impl App {
         buf.to_string()
     }
 
-    fn read_var_col<T: rubbl_casatables::CasaScalarData + Copy + std::fmt::Debug + std::fmt::Display>(
+    fn read_var_col<
+        T: rubbl_casatables::CasaScalarData + Copy + std::fmt::Debug + std::fmt::Display,
+    >(
         &mut self,
         buf: &mut String,
         column_name: &str,
+        row_num: u64,
     ) {
         let mut main_row = self.ms_table.get_row_reader().expect("Failed");
-        let _data = self.ms_table.read_row(&mut main_row, 0).unwrap();
+        let _data = self.ms_table.read_row(&mut main_row, row_num).unwrap();
         let mdata = main_row.get_cell::<Array1<T>>(column_name);
         match mdata {
             Ok(x) => buf.push_str(&format!("{}\n", x)),
@@ -250,22 +253,40 @@ impl App {
         buf.push_str("Values: \n");
         let col_desc = self.ms_table.get_col_desc(column_name).expect("Failed");
         if !col_desc.is_fixed_shape() {
-            match col_desc.data_type() {
-                GlueDataType::TpBool => self.read_var_col::<bool>(buf, column_name),
-                GlueDataType::TpChar => self.read_var_col::<i8>(buf, column_name),
-                GlueDataType::TpUChar => self.read_var_col::<u8>(buf, column_name),
-                GlueDataType::TpShort => self.read_var_col::<i16>(buf, column_name),
-                GlueDataType::TpUShort => self.read_var_col::<u16>(buf, column_name),
-                GlueDataType::TpInt => self.read_var_col::<i32>(buf, column_name),
-                GlueDataType::TpUInt => self.read_var_col::<u32>(buf, column_name),
-                GlueDataType::TpInt64 => self.read_var_col::<i64>(buf, column_name),
-                GlueDataType::TpFloat => self.read_var_col::<f32>(buf, column_name),
-                GlueDataType::TpDouble => self.read_var_col::<f64>(buf, column_name),
-                GlueDataType::TpComplex => self.read_var_col::<Complex<f32>>(buf, column_name),
-                GlueDataType::TpDComplex => self.read_var_col::<Complex<f64>>(buf, column_name),
-                _ => {
-                    let data = format!("Not implemented for {}", col_desc.data_type());
-                    buf.push_str(&format!("{}", data));
+            buf.push_str(&format!(":{:^5}: ", "ROW"));
+            buf.push_str("VALUE");
+            buf.push_str("\n");
+            for row_num in row_start..row_end {
+                buf.push_str(&format!(":{:>5}: ", row_num));
+                match col_desc.data_type() {
+                    GlueDataType::TpBool => self.read_var_col::<bool>(buf, column_name, row_num),
+                    GlueDataType::TpChar => self.read_var_col::<i8>(buf, column_name, row_num),
+                    GlueDataType::TpUChar => self.read_var_col::<u8>(buf, column_name, row_num),
+                    GlueDataType::TpShort => self.read_var_col::<i16>(buf, column_name, row_num),
+                    GlueDataType::TpUShort => self.read_var_col::<u16>(buf, column_name, row_num),
+                    GlueDataType::TpInt => self.read_var_col::<i32>(buf, column_name, row_num),
+                    GlueDataType::TpUInt => self.read_var_col::<u32>(buf, column_name, row_num),
+                    GlueDataType::TpInt64 => self.read_var_col::<i64>(buf, column_name, row_num),
+                    GlueDataType::TpFloat => self.read_var_col::<f32>(buf, column_name, row_num),
+                    GlueDataType::TpDouble => self.read_var_col::<f64>(buf, column_name, row_num),
+                    GlueDataType::TpComplex => {
+                        self.read_var_col::<Complex<f32>>(buf, column_name, row_num)
+                    }
+                    GlueDataType::TpDComplex => {
+                        self.read_var_col::<Complex<f64>>(buf, column_name, row_num)
+                    }
+                    GlueDataType::TpString => {
+                        let mut main_row = self.ms_table.get_row_reader().expect("Failed");
+                        let _data = self.ms_table.read_row(&mut main_row, row_num).unwrap();
+                        let mdata = main_row
+                            .get_cell::<Vec<String>>(column_name)
+                            .expect("Failed to parse string column.");
+                        buf.push_str(&format!("[{}]\n", mdata.join(", ")));
+                    }
+                    _ => {
+                        let data = format!("Not implemented for {}", col_desc.data_type());
+                        buf.push_str(&format!("{}\n", data));
+                    }
                 }
             }
             return buf.to_string();
@@ -515,6 +536,9 @@ impl App {
                 buf.push_str(&format!("Column data type: {}\n", col_desc.data_type()));
                 buf.push_str(&format!("Column keywords: {}\n", col_kw.join(", ")));
                 buf.push_str(&format!("Scalar: {}\n", col_desc.is_scalar()));
+                if !col_desc.is_scalar() {
+                    buf.push_str(&format!("Fixed shape: {}\n", col_desc.is_fixed_shape()));
+                }
 
                 match col_desc.is_scalar() {
                     true => {
