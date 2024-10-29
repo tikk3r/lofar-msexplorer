@@ -90,7 +90,8 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.decrease_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
@@ -98,7 +99,8 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.increase_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
@@ -106,7 +108,8 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.decrease_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
@@ -114,7 +117,8 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.decrease_soltab(10);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
@@ -122,7 +126,8 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.increase_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
@@ -130,12 +135,13 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.increase_soltab(10);
                         app.update_soltabs();
                         match app.currently_editing {
-                            CurrentlyEditing::Table => app.select(),
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
                             _ => {},
                         }
                     }
                     KeyCode::Enter => {
-                        app.select();
+                        app.select(true);
                     }
                     _ => {}
                 },

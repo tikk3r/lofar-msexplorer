@@ -1,5 +1,5 @@
 use rubbl_casatables::{GlueDataType, Table, TableOpenMode};
-use rubbl_core::ndarray::{Array1, Array2, Array3, ArrayD, Ix1, Ix2, IxDyn};
+use rubbl_core::ndarray::{Array1, Array2, Array3, Ix1, Ix2};
 use rubbl_core::{Array, Complex};
 
 pub enum CurrentScreen {
@@ -24,6 +24,7 @@ pub struct App {
     pub current_column: usize,
     pub text_buffer: String,
     pub text_scroll: u16,
+    pub tab_scroll: u64,
 }
 
 impl App {
@@ -45,8 +46,9 @@ impl App {
             current_table: 0,
             text_buffer: "".to_string(),
             text_scroll: 0,
+            tab_scroll: 0,
         };
-        app.select();
+        app.select(true);
         app
     }
 
@@ -79,7 +81,8 @@ impl App {
     pub fn increase_soltab(&mut self, amount: u16) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
-                self.text_scroll += amount;
+                //self.text_scroll += amount;
+                self.tab_scroll += amount as u64;
             }
             CurrentlyEditing::Column => {
                 self.current_column += 1;
@@ -99,11 +102,12 @@ impl App {
     pub fn decrease_soltab(&mut self, amount: u16) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
-                if self.text_scroll > 0 {
-                    if amount <= self.text_scroll {
-                        self.text_scroll -= amount;
+                if self.tab_scroll > 0 {
+                    if amount as u64 <= self.tab_scroll {
+                        //self.text_scroll -= amount;
+                        self.tab_scroll -= amount as u64;
                     } else {
-                        self.text_scroll = 0;
+                        self.tab_scroll = 0;
                     }
                 }
             }
@@ -525,8 +529,64 @@ impl App {
         buf.to_string()
     }
 
-    pub fn select(&mut self) {
+    pub fn select(&mut self, reset_view: bool) {
         match &self.currently_editing {
+            CurrentlyEditing::Information => {
+                let mut buf = "".to_string();
+
+                let column_name = self.columns[self.current_column].clone();
+                let col_desc = self.ms_table.get_col_desc(&column_name).expect("Failed");
+                let col_kw = self
+                    .ms_table
+                    .column_keyword_names(&column_name)
+                    .expect("Failed");
+                buf.push_str(&format!("Column name: {}\n", column_name));
+                buf.push_str(&format!("Column data type: {}\n", col_desc.data_type()));
+                buf.push_str(&format!("Column keywords: {}\n", col_kw.join(", ")));
+                buf.push_str(&format!("Scalar: {}\n", col_desc.is_scalar()));
+                if !col_desc.is_scalar() {
+                    buf.push_str(&format!("Fixed shape: {}\n", col_desc.is_fixed_shape()));
+                }
+
+                match col_desc.is_scalar() {
+                    true => {
+                        if self.ms_table.n_rows() < 50 {
+                            self.read_scalar_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                0,
+                                self.ms_table.n_rows(),
+                            )
+                        } else {
+                            self.read_scalar_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                self.tab_scroll as u64,
+                                self.tab_scroll as u64 + 50,
+                            )
+                        }
+                    }
+                    false => {
+                        if self.ms_table.n_rows() < 50 {
+                            self.read_array_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                self.text_scroll as u64,
+                                self.ms_table.n_rows(),
+                            )
+                        } else {
+                            self.read_array_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                self.tab_scroll as u64,
+                                self.tab_scroll as u64 + 50,
+                            )
+                        }
+                    }
+                };
+
+                self.text_buffer = buf;
+            }
             CurrentlyEditing::Column => {
                 let mut buf = "".to_string();
 
@@ -562,7 +622,7 @@ impl App {
                             self.read_array_value_into_buffer(
                                 &mut buf,
                                 &column_name,
-                                0,
+                                self.text_scroll as u64,
                                 self.ms_table.n_rows(),
                             )
                         } else {
@@ -570,7 +630,6 @@ impl App {
                         }
                     }
                 };
-
                 self.text_buffer = buf;
             }
             CurrentlyEditing::Table => {
@@ -589,8 +648,10 @@ impl App {
                 self.columns = self.ms_table.column_names().expect("Failed");
                 self.current_column = 0;
             }
-            _ => {}
         }
-        self.text_scroll = 0;
+        if reset_view {
+            self.text_scroll = 0;
+            self.tab_scroll = 0;
+        }
     }
 }
