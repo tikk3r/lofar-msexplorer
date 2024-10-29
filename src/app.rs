@@ -76,10 +76,10 @@ impl App {
         };
     }
 
-    pub fn increase_soltab(&mut self) {
+    pub fn increase_soltab(&mut self, amount: u16) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
-                self.text_scroll += 1;
+                self.text_scroll += amount;
             }
             CurrentlyEditing::Column => {
                 self.current_column += 1;
@@ -96,11 +96,15 @@ impl App {
         }
     }
 
-    pub fn decrease_soltab(&mut self) {
+    pub fn decrease_soltab(&mut self, amount: u16) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
                 if self.text_scroll > 0 {
-                    self.text_scroll -= 1;
+                    if amount <= self.text_scroll {
+                        self.text_scroll -= amount;
+                    } else {
+                        self.text_scroll = 0;
+                    }
                 }
             }
             CurrentlyEditing::Table => {

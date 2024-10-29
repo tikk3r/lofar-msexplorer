@@ -87,7 +87,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.toggle_editing(false);
                     }
                     KeyCode::Up => {
-                        app.decrease_soltab();
+                        app.decrease_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(),
@@ -95,7 +95,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Down => {
-                        app.increase_soltab();
+                        app.increase_soltab(1);
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(),
@@ -103,7 +103,15 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('k') => {
-                        app.decrease_soltab();
+                        app.decrease_soltab(1);
+                        app.update_soltabs();
+                        match app.currently_editing {
+                            CurrentlyEditing::Table => app.select(),
+                            _ => {},
+                        }
+                    }
+                    KeyCode::Char('K') => {
+                        app.decrease_soltab(10);
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(),
@@ -111,7 +119,15 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('j') => {
-                        app.increase_soltab();
+                        app.increase_soltab(1);
+                        app.update_soltabs();
+                        match app.currently_editing {
+                            CurrentlyEditing::Table => app.select(),
+                            _ => {},
+                        }
+                    }
+                    KeyCode::Char('J') => {
+                        app.increase_soltab(10);
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(),
