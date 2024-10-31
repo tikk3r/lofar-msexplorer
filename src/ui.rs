@@ -115,15 +115,15 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         {
             match &app.currently_editing {
                 CurrentlyEditing::Table => Span::styled(
-                    "<up/down> move / <Enter> Select / <Tab> switch panel",
+                    "<up/down> move / <Enter> Select / <Tab> switch panel / <?> help",
                     Style::default().fg(Color::LightGreen),
                 ),
                 CurrentlyEditing::Column => Span::styled(
-                    "<up/down> move / <Enter> Select / <Tab> switch panel",
+                    "<up/down> move / <Enter> Select / <Tab> switch panel / <?> help",
                     Style::default().fg(Color::LightGreen),
                 ),
                 CurrentlyEditing::Information => Span::styled(
-                    "<up/down> scroll text / <Tab> switch panel",
+                    "<up/down> scroll text / <Tab> switch panel / <?> help",
                     Style::default().fg(Color::LightGreen),
                 ),
             }
