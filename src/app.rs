@@ -608,7 +608,7 @@ impl App {
 
                 match col_desc.is_scalar() {
                     true => {
-                        if self.ms_table.n_rows() < 50 {
+                        if self.ms_table.n_rows() < self.line_height.into() {
                             self.read_scalar_value_into_buffer(
                                 &mut buf,
                                 &column_name,
@@ -616,11 +616,11 @@ impl App {
                                 self.ms_table.n_rows(),
                             )
                         } else {
-                            self.read_scalar_value_into_buffer(&mut buf, &column_name, 0, 50)
+                            self.read_scalar_value_into_buffer(&mut buf, &column_name, 0, self.line_height.into())
                         }
                     }
                     false => {
-                        if self.ms_table.n_rows() < 50 {
+                        if self.ms_table.n_rows() < self.line_height.into() {
                             self.read_array_value_into_buffer(
                                 &mut buf,
                                 &column_name,
@@ -628,7 +628,7 @@ impl App {
                                 self.ms_table.n_rows(),
                             )
                         } else {
-                            self.read_array_value_into_buffer(&mut buf, &column_name, 0, 50)
+                            self.read_array_value_into_buffer(&mut buf, &column_name, 0, self.line_height.into())
                         }
                     }
                 };
