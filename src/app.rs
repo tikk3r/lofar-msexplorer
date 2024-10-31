@@ -25,6 +25,7 @@ pub struct App {
     pub text_buffer: String,
     pub text_scroll: u16,
     pub tab_scroll: u64,
+    pub line_height: u16,
 }
 
 impl App {
@@ -47,6 +48,7 @@ impl App {
             text_buffer: "".to_string(),
             text_scroll: 0,
             tab_scroll: 0,
+            line_height: 50,
         };
         app.select(true);
         app
@@ -550,7 +552,7 @@ impl App {
 
                 match col_desc.is_scalar() {
                     true => {
-                        if self.ms_table.n_rows() < 50 {
+                        if self.ms_table.n_rows() < self.line_height.into() {
                             self.read_scalar_value_into_buffer(
                                 &mut buf,
                                 &column_name,
@@ -562,12 +564,12 @@ impl App {
                                 &mut buf,
                                 &column_name,
                                 self.tab_scroll as u64,
-                                self.tab_scroll as u64 + 50,
+                                self.tab_scroll as u64 + self.line_height as u64,
                             )
                         }
                     }
                     false => {
-                        if self.ms_table.n_rows() < 50 {
+                        if self.ms_table.n_rows() < self.line_height.into() {
                             self.read_array_value_into_buffer(
                                 &mut buf,
                                 &column_name,
@@ -579,7 +581,7 @@ impl App {
                                 &mut buf,
                                 &column_name,
                                 self.tab_scroll as u64,
-                                self.tab_scroll as u64 + 50,
+                                self.tab_scroll as u64 + self.line_height as u64,
                             )
                         }
                     }

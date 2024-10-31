@@ -8,7 +8,7 @@ use ratatui::{
 
 use crate::app::{App, CurrentScreen, CurrentlyEditing};
 
-pub fn ui(frame: &mut Frame, app: &App) {
+pub fn ui(frame: &mut Frame, app: &mut App) {
     // Create the layout sections.
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -53,6 +53,9 @@ pub fn ui(frame: &mut Frame, app: &App) {
         Layout::horizontal([Constraint::Percentage(25), Constraint::Percentage(75)])
             .areas(chunks[1]);
     let [top_left, bottom_left] = Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).areas(left);
+    // Adapt the number of lines we'll read in the info panel
+    // based on how many lines are shown in the terminal.
+    app.line_height = right.height;
 
     let mut solset_block = Block::default()
         .borders(Borders::ALL)
