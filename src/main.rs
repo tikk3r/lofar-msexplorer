@@ -5,7 +5,7 @@ use clap::Parser;
 use ratatui::{
     backend::{Backend, CrosstermBackend},
     crossterm::{
-        event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+        event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, ModifierKeyCode},
         execute,
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     },
@@ -87,7 +87,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.toggle_editing(false);
                     }
                     KeyCode::Up => {
-                        app.decrease_soltab(1);
+                        app.decrease_soltab(1, "data");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),
@@ -96,7 +96,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Down => {
-                        app.increase_soltab(1);
+                        app.increase_soltab(1, "data");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),
@@ -105,7 +105,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('k') => {
-                        app.decrease_soltab(1);
+                        app.decrease_soltab(1, "data");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),
@@ -114,7 +114,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('K') => {
-                        app.decrease_soltab(10);
+                        app.decrease_soltab(10, "data");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),
@@ -123,7 +123,25 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('j') => {
-                        app.increase_soltab(1);
+                        app.increase_soltab(1, "data");
+                        app.update_soltabs();
+                        match app.currently_editing {
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
+                            _ => {},
+                        }
+                    }
+                    KeyCode::PageUp => {
+                        app.decrease_soltab(1, "view");
+                        app.update_soltabs();
+                        match app.currently_editing {
+                            CurrentlyEditing::Table => app.select(true),
+                            CurrentlyEditing::Information => app.select(false),
+                            _ => {},
+                        }
+                    }
+                    KeyCode::PageDown => {
+                        app.increase_soltab(1, "view");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),
@@ -132,7 +150,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         }
                     }
                     KeyCode::Char('J') => {
-                        app.increase_soltab(10);
+                        app.increase_soltab(10, "data");
                         app.update_soltabs();
                         match app.currently_editing {
                             CurrentlyEditing::Table => app.select(true),

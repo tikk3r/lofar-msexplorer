@@ -80,11 +80,14 @@ impl App {
         };
     }
 
-    pub fn increase_soltab(&mut self, amount: u16) {
+    pub fn increase_soltab(&mut self, amount: u16, scroll: &str) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
-                //self.text_scroll += amount;
-                self.tab_scroll += amount as u64;
+                if scroll == "view" {
+                    self.text_scroll += amount;
+                } else if scroll == "data" {
+                    self.tab_scroll += amount as u64;
+                }
             }
             CurrentlyEditing::Column => {
                 self.current_column += 1;
@@ -101,15 +104,24 @@ impl App {
         }
     }
 
-    pub fn decrease_soltab(&mut self, amount: u16) {
+    pub fn decrease_soltab(&mut self, amount: u16, scroll: &str) {
         match &self.currently_editing {
             CurrentlyEditing::Information => {
-                if self.tab_scroll > 0 {
-                    if amount as u64 <= self.tab_scroll {
-                        //self.text_scroll -= amount;
-                        self.tab_scroll -= amount as u64;
-                    } else {
-                        self.tab_scroll = 0;
+                if scroll == "view" {
+                    if self.text_scroll > 0 {
+                        if amount <= self.text_scroll {
+                            self.text_scroll -= amount;
+                        } else {
+                            self.text_scroll = 0;
+                        }
+                    }
+                } else if scroll == "data" {
+                    if self.tab_scroll > 0 {
+                        if amount as u64 <= self.tab_scroll {
+                            self.tab_scroll -= amount as u64;
+                        } else {
+                            self.tab_scroll = 0;
+                        }
                     }
                 }
             }
@@ -616,7 +628,12 @@ impl App {
                                 self.ms_table.n_rows(),
                             )
                         } else {
-                            self.read_scalar_value_into_buffer(&mut buf, &column_name, 0, self.line_height.into())
+                            self.read_scalar_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                0,
+                                self.line_height.into(),
+                            )
                         }
                     }
                     false => {
@@ -628,7 +645,12 @@ impl App {
                                 self.ms_table.n_rows(),
                             )
                         } else {
-                            self.read_array_value_into_buffer(&mut buf, &column_name, 0, self.line_height.into())
+                            self.read_array_value_into_buffer(
+                                &mut buf,
+                                &column_name,
+                                0,
+                                self.line_height.into(),
+                            )
                         }
                     }
                 };
