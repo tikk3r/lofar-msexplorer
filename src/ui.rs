@@ -139,7 +139,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
                 Span::styled("<q> to quit", Style::default().fg(Color::Red))
             }
             CurrentScreen::Exiting => Span::styled(
-                "(q) to quit / (e) to make new pair",
+                "(q) to quit",
                 Style::default().fg(Color::Red),
             ),
         }
