@@ -5,6 +5,7 @@ use rubbl_core::{Array, Complex};
 pub enum CurrentScreen {
     Main,
     Exiting,
+    Help,
 }
 
 pub enum CurrentlyEditing {

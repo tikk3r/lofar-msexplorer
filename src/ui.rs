@@ -52,7 +52,8 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let [left, right] =
         Layout::horizontal([Constraint::Percentage(25), Constraint::Percentage(75)])
             .areas(chunks[1]);
-    let [top_left, bottom_left] = Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).areas(left);
+    let [top_left, bottom_left] =
+        Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).areas(left);
     // Adapt the number of lines we'll read in the info panel
     // based on how many lines are shown in the terminal.
     app.line_height = right.height;
@@ -102,7 +103,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let current_navigation_text = vec![
         // The first half of the text
         match app.current_screen {
-            CurrentScreen::Main => Span::styled("Normal Mode", Style::default().fg(Color::Green)),
+            CurrentScreen::Main | CurrentScreen::Help => {
+                Span::styled("Normal Mode", Style::default().fg(Color::Green))
+            }
             CurrentScreen::Exiting => Span::styled("Exiting", Style::default().fg(Color::LightRed)),
         }
         .to_owned(),
@@ -132,7 +135,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     let current_keys_hint = {
         match app.current_screen {
-            CurrentScreen::Main => Span::styled("<q> to quit", Style::default().fg(Color::Red)),
+            CurrentScreen::Main | CurrentScreen::Help => {
+                Span::styled("<q> to quit", Style::default().fg(Color::Red))
+            }
             CurrentScreen::Exiting => Span::styled(
                 "(q) to quit / (e) to make new pair",
                 Style::default().fg(Color::Red),
@@ -140,8 +145,9 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
         }
     };
 
-    let key_notes_footer =
-        Paragraph::new(Line::from(current_keys_hint)).block(Block::default().borders(Borders::ALL)).centered();
+    let key_notes_footer = Paragraph::new(Line::from(current_keys_hint))
+        .block(Block::default().borders(Borders::ALL))
+        .centered();
 
     let footer_chunks = Layout::default()
         .direction(Direction::Horizontal)
@@ -166,6 +172,26 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
         let area = centered_rect(30, 10, frame.area());
         frame.render_widget(exit_paragraph, area);
+    }
+
+    if let CurrentScreen::Help = app.current_screen {
+        let popup_block = Block::default()
+            .title(" Help (q/Esc to exit)")
+            .borders(Borders::ALL)
+            .style(Style::default().bg(Color::DarkGray));
+
+        let help_text = Text::styled(
+            "Tab - cycle through panels\nup/down/j/k - select entry or move through data by one line\nJ/K - move through data by 10 lines\nEnter - load data from field\nq - quit program",
+            Style::default().fg(Color::White),
+        );
+        // the `trim: false` will stop the text from being cut off when over the edge of the block
+        let help_paragraph = Paragraph::new(help_text)
+            .block(popup_block)
+            .centered()
+            .wrap(Wrap { trim: false });
+
+        let area = centered_rect(45, 65, frame.area());
+        frame.render_widget(help_paragraph, area);
     }
 }
 

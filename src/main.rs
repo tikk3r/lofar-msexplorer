@@ -77,6 +77,9 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
             }
             match app.current_screen {
                 CurrentScreen::Main => match key.code {
+                    KeyCode::Char('?') => {
+                        app.current_screen = CurrentScreen::Help;
+                    }
                     KeyCode::Char('q') => {
                         app.current_screen = CurrentScreen::Exiting;
                     }
@@ -169,6 +172,12 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                     }
                     KeyCode::Char('n') => {
                         //return Ok(false);
+                        app.current_screen = CurrentScreen::Main;
+                    }
+                    _ => {}
+                },
+                CurrentScreen::Help => match key.code {
+                    KeyCode::Esc | KeyCode::Char('q') => {
                         app.current_screen = CurrentScreen::Main;
                     }
                     _ => {}
