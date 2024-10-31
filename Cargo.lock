@@ -515,6 +515,7 @@ dependencies = [
 [[package]]
 name = "rubbl_casatables"
 version = "0.0.0-dev.0"
+source = "git+https://github.com/tikk3r/rubbl?branch=dysco-support#7493ba2a308fd18d7ee38ea7b136ea2c7ceac4d8"
 dependencies = [
  "cc",
  "ndarray",
@@ -527,6 +528,7 @@ dependencies = [
 [[package]]
 name = "rubbl_casatables_impl"
 version = "0.0.0-dev.0"
+source = "git+https://github.com/tikk3r/rubbl?branch=dysco-support#7493ba2a308fd18d7ee38ea7b136ea2c7ceac4d8"
 dependencies = [
  "cc",
 ]
@@ -534,6 +536,7 @@ dependencies = [
 [[package]]
 name = "rubbl_core"
 version = "0.0.0-dev.0"
+source = "git+https://github.com/tikk3r/rubbl?branch=dysco-support#7493ba2a308fd18d7ee38ea7b136ea2c7ceac4d8"
 dependencies = [
  "byteorder",
  "ndarray",
