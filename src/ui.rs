@@ -152,7 +152,6 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     frame.render_widget(key_notes_footer, footer_chunks[1]);
 
     if let CurrentScreen::Exiting = app.current_screen {
-        frame.render_widget(Clear, frame.area()); //this clears the entire screen and anything already drawn
         let popup_block = Block::default()
             .title("Exiting...")
             .borders(Borders::ALL)
