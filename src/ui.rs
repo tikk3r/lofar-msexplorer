@@ -2,7 +2,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph, Wrap},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
     Frame,
 };
 
@@ -138,10 +138,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             CurrentScreen::Main | CurrentScreen::Help => {
                 Span::styled("<q> to quit", Style::default().fg(Color::Red))
             }
-            CurrentScreen::Exiting => Span::styled(
-                "(q) to quit",
-                Style::default().fg(Color::Red),
-            ),
+            CurrentScreen::Exiting => Span::styled("<q> to quit", Style::default().fg(Color::Red)),
         }
     };
 
@@ -163,7 +160,10 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             .borders(Borders::ALL)
             .style(Style::default().bg(Color::DarkGray));
 
-        let exit_text = Text::styled("Exit LOFAR H5stat? (y/n)", Style::default().fg(Color::Red));
+        let exit_text = Text::styled(
+            "Exit LOFAR MSExplorer? (y/n)",
+            Style::default().fg(Color::Red),
+        );
         // the `trim: false` will stop the text from being cut off when over the edge of the block
         let exit_paragraph = Paragraph::new(exit_text)
             .block(popup_block)
