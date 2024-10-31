@@ -182,7 +182,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             .style(Style::default().bg(Color::DarkGray));
 
         let help_text = Text::styled(
-            "Tab - cycle through panels\nup/down/j/k - select entry or move through data by one line\nJ/K - move through data by 10 lines\nEnter - load data from field\nq - quit program",
+            "Tab - cycle through panels\nup/down/j/k - select entry or move through data by one line\nJ/K - move through data by 10 lines\nPgUp/PgDown - move the text (useful for long rows spanning multiple lines)\nEnter - load data from field\nq - quit program",
             Style::default().fg(Color::White),
         );
         // the `trim: false` will stop the text from being cut off when over the edge of the block
