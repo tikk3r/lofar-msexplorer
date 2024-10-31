@@ -2,7 +2,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
+    widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph, Wrap},
     Frame,
 };
 
@@ -171,6 +171,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             .wrap(Wrap { trim: false });
 
         let area = centered_rect(30, 10, frame.area());
+        frame.render_widget(Clear, area);
         frame.render_widget(exit_paragraph, area);
     }
 
@@ -191,6 +192,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
             .wrap(Wrap { trim: false });
 
         let area = centered_rect(45, 65, frame.area());
+        frame.render_widget(Clear, area);
         frame.render_widget(help_paragraph, area);
     }
 }
