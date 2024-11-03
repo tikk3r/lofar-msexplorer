@@ -23,6 +23,7 @@ pub struct App {
     pub columns: Vec<String>,
     pub current_table: usize,
     pub current_column: usize,
+    pub text_buffer_head: String,
     pub text_buffer: String,
     pub text_scroll: u16,
     pub tab_scroll: u64,
@@ -46,6 +47,7 @@ impl App {
             columns,
             current_column: 0,
             current_table: 0,
+            text_buffer_head: "".to_string(),
             text_buffer: "".to_string(),
             text_scroll: 0,
             tab_scroll: 0,
@@ -158,7 +160,6 @@ impl App {
         start_row: u64,
         end_row: u64,
     ) -> String {
-        buf.push_str("Values: \n");
         let col_desc = self.ms_table.get_col_desc(column_name).expect("Failed");
         let mut main_row = self.ms_table.get_row_reader().expect("Failed");
 
@@ -273,7 +274,6 @@ impl App {
         row_start: u64,
         row_end: u64,
     ) -> String {
-        buf.push_str("Values: \n");
         let col_desc = self.ms_table.get_col_desc(column_name).expect("Failed");
         if !col_desc.is_fixed_shape() {
             buf.push_str(&format!(":{:^5}: ", "ROW"));
@@ -562,6 +562,8 @@ impl App {
                 if !col_desc.is_scalar() {
                     buf.push_str(&format!("Fixed shape: {}\n", col_desc.is_fixed_shape()));
                 }
+                self.text_buffer_head = buf;
+                let mut buf = "".to_string();
 
                 match col_desc.is_scalar() {
                     true => {
@@ -618,6 +620,8 @@ impl App {
                 if !col_desc.is_scalar() {
                     buf.push_str(&format!("Fixed shape: {}\n", col_desc.is_fixed_shape()));
                 }
+                self.text_buffer_head = buf;
+                let mut buf = "".to_string();
 
                 match col_desc.is_scalar() {
                     true => {

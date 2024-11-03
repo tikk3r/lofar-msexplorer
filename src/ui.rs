@@ -52,6 +52,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let [left, right] =
         Layout::horizontal([Constraint::Percentage(25), Constraint::Percentage(75)])
             .areas(chunks[1]);
+    let [info_head, info_body] = Layout::vertical([Constraint::Percentage(15), Constraint::Percentage(85)]).areas(right);
     let [top_left, bottom_left] =
         Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).areas(left);
     // Adapt the number of lines we'll read in the info panel
@@ -60,21 +61,25 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     let mut solset_block = Block::default()
         .borders(Borders::ALL)
-        .title("Tables")
+        .title(" Tables ")
         .style(Style::default());
     let mut soltab_block = Block::default()
         .borders(Borders::ALL)
-        .title("Fields")
+        .title(" Fields ")
         .style(Style::default());
-    let mut info_block = Block::default()
+    let info_block_head = Block::default()
         .borders(Borders::ALL)
-        .title("Information")
+        .title(" Column Information ")
+        .style(Style::default());
+    let mut info_block_body = Block::default()
+        .borders(Borders::ALL)
+        .title(" Column Values ")
         .style(Style::default());
     let active_style = Style::default().bg(Color::White).fg(Color::Black);
     match &app.currently_editing {
         CurrentlyEditing::Table => solset_block = solset_block.border_style(active_style),
         CurrentlyEditing::Column => soltab_block = soltab_block.border_style(active_style),
-        CurrentlyEditing::Information => info_block = info_block.border_style(active_style),
+        CurrentlyEditing::Information => info_block_body = info_block_body.border_style(active_style),
     }
 
     let table_list = List::new(table_items)
@@ -92,14 +97,20 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     let mut column_list_state = ListState::default();
     column_list_state.select(Some(app.current_column));
 
+    let info_text_head = Paragraph::new(app.text_buffer_head.clone())
+        .block(info_block_head)
+        .wrap(Wrap { trim: true })
+        .scroll((app.text_scroll, 0));
     let info_text = Paragraph::new(app.text_buffer.clone())
-        .block(info_block)
+        .block(info_block_body)
         .wrap(Wrap { trim: true })
         .scroll((app.text_scroll, 0));
 
     frame.render_stateful_widget(table_list, top_left, &mut table_list_state);
     frame.render_stateful_widget(column_list, bottom_left, &mut column_list_state);
-    frame.render_widget(info_text, right);
+    //frame.render_widget(info_text, right);
+    frame.render_widget(info_text_head, info_head);
+    frame.render_widget(info_text, info_body);
     let current_navigation_text = vec![
         // The first half of the text
         match app.current_screen {
